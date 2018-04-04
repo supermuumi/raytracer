@@ -29,12 +29,10 @@ public:
 	}
 
 	Ray getRay(double s, double t) {
-		Vec3 rd = lensRadius * getRandomInUnitDisc();
-		Vec3 ofs = u * rd.x + v * rd.y;
-		double time = tShutterOpen + drand()*(tShutterClose - tShutterOpen);
-		return Ray(origin + ofs, 
-				   lowerLeftCorner + s * horizontal + t * vertical - origin - ofs,
-				   time);
+		Vec3 rd = lensRadius*getRandomInUnitDisc();
+		Vec3 offset = u*rd.x + v*rd.y;
+		double time = tShutterOpen + drand()*(tShutterClose-tShutterOpen);
+		return Ray(origin + offset, lowerLeftCorner + s*horizontal + t*vertical - origin - offset, time);
 	}
 
 	Vec3 origin;

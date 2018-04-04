@@ -20,28 +20,30 @@ public:
 	Vec3 center;
 };
 
-bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& hitInfo) const {
+bool Sphere::hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const {
 	Vec3 oc = r.origin - center;
 	double a = dot(r.direction, r.direction);
 	double b = dot(oc, r.direction);
-	double c = dot(oc, oc) - radius * radius;
-	double discriminant = b * b - a * c;
+	double c = dot(oc, oc) - radius*radius;
+	double discriminant = b*b - a*c;
+
 	if (discriminant > 0.0) {
-		double sq = sqrt(discriminant);
-		double temp = (-b - sqrt(b*b - a * c)) / a;
+		double temp = (-b - sqrt(b*b - a*c)) / a;
 		if (temp > t_min && temp < t_max) {
-			hitInfo.dist = temp;
-			hitInfo.point = r.pointAt(hitInfo.dist);
-			hitInfo.normal = (hitInfo.point - center) / radius;
-			hitInfo.pMat = material;
+			rec.dist = temp;
+			rec.point = r.pointAt(rec.dist);
+			rec.normal = (rec.point - center) / radius;
+			rec.pMat = material;
+			//get_sphere_uv((rec.p - center) / radius, rec.u, rec.v);
 			return true;
 		}
-		temp = (-b + sqrt(b*b - a * c)) / a;
+		temp = (-b + sqrt(b*b - a*c)) / a;
 		if (temp > t_min && temp < t_max) {
-			hitInfo.dist = temp;
-			hitInfo.point = r.pointAt(hitInfo.dist);
-			hitInfo.normal = (hitInfo.point - center) / radius;
-			hitInfo.pMat = material; 
+			rec.dist = temp;
+			rec.point = r.pointAt(rec.dist);
+			rec.normal = (rec.point - center) / radius;
+			rec.pMat = material;
+			//get_sphere_uv((rec.p - center) / radius, rec.u, rec.v);
 			return true;
 		}
 	}

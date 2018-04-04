@@ -36,21 +36,20 @@ bool MovingSphere::hit(const Ray& r, double t_min, double t_max, HitRecord& hitI
 	double b = dot(oc, r.direction);
 	double c = dot(oc, oc) - radius * radius;
 	double discriminant = b * b - a * c;
-	if (discriminant > 0.0) {
-		double sq = sqrt(discriminant);
-		double temp = (-b - sq) / (a + 0.0001);
+	if (discriminant > 0.0) {		
+		double temp = (-b - sqrt(discriminant)) / a;
 		if (temp > t_min && temp < t_max) {
 			hitInfo.dist = temp;
 			hitInfo.point = r.pointAt(hitInfo.dist);
-			hitInfo.normal = (hitInfo.point - center) / radius;
+			hitInfo.normal = (hitInfo.point - getPosition(r.time)) / radius;
 			hitInfo.pMat = material;
 			return true;
 		}
-		temp = (-b + sq) / (a + 0.0001);
+		temp = (-b + sqrt(discriminant)) / a;
 		if (temp > t_min && temp < t_max) {
 			hitInfo.dist = temp;
 			hitInfo.point = r.pointAt(hitInfo.dist);
-			hitInfo.normal = (hitInfo.point - center) / radius;
+			hitInfo.normal = (hitInfo.point - getPosition(r.time)) / radius;
 			hitInfo.pMat = material;
 			return true;
 		}

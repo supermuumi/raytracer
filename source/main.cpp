@@ -14,10 +14,10 @@
 #define STBI_MSC_SECURE_CRT
 #include "stb_image_write.h"
 
-#define XSIZE 200
-#define YSIZE 112
+#define XSIZE 400
+#define YSIZE 200
 #define NUM_SAMPLES 100
-#define MAX_RAY_RECURSION 50
+#define MAX_RAY_RECURSION 2
 
 Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 	HitRecord hit;
@@ -29,27 +29,32 @@ Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 			return attenuation * getRayColor(scattered, world, depth + 1);
 		}
 		else {
-			return VEC3_ZERO;
+			return Vec3(0.0, 0.0, 0.0);
 		}
 	}
 	else {
 		Vec3 unitDir = unitVector(r.direction);
 		double t = 0.5*(unitDir.y + 1.0);
-		return (1.0 - t) * VEC3_ONE + t * Vec3(0.5, 0.7, 1.0);
+		return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
 	}
 }
 
 Hitable* createScene() {
 	Hitable** list = new Hitable*[500];
-	list[0] = new Sphere(Vec3(0.0, -100.5, -1.0), 100.0, new Lambertian(new CheckerTexture(new ConstantTexture(Vec3(0.8, 0.3, 0.3)), new ConstantTexture(Vec3(0.9, 0.9, 0.9)))));;
+	list[0] = new Sphere(Vec3(0.0, -100.5, -1.0), 100.0, new Lambertian(new CheckerTexture(new ConstantTexture(Vec3(0.8, 0.3, 0.3)), new ConstantTexture(Vec3(0.9, 0.9, 0.9)))));
 	int i = 1;
+	srand(715517);
+	double x = drand();
+	int nnn = rand();
 	for (; i < 200; i++) {
 		Vec3 center(10.0 - drand()*20.0, 0.0, 10.0 - drand()*20.0);
 		double radius = 0.4 + drand()*0.2;
 		Material* mat;
 		double d = drand();
-		if (d < 0.6) {
-			mat = new Lambertian(new ConstantTexture(Vec3(drand(), drand(), drand())));
+		if (d < 1.0) {
+			//mat = new Lambertian(new ConstantTexture(Vec3(drand(), drand(), drand())));
+			//mat = new Metal(Vec3(drand(), drand(), drand()));
+			mat = new Dielectric(0.75 + drand()*0.5);
 		}
 		else if (d < 0.8) {
 			mat = new Metal(Vec3(drand(), drand(), drand()));
@@ -57,7 +62,7 @@ Hitable* createScene() {
 		else {
 			mat = new Dielectric(0.75 + drand()*0.5);
 		}
-		if (d < 0.6) {
+		if (d < 0.01) {
 			list[i] = new MovingSphere(center, center + Vec3(0.0, 0.1 + drand()*0.9, 0.0), 0.0, 1.0, radius, mat);
 		}
 		else {
@@ -70,6 +75,10 @@ Hitable* createScene() {
 	//return new HitableList(list, i);
 }
 
+bool isNanVec(Vec3 v) {
+	return isnan(v.x) || isnan(v.y) || isnan(v.z);
+}
+
 int main(int argc, char* argv[]) {
 	unsigned char* imgData = new unsigned char[XSIZE * YSIZE * 3];
 
@@ -79,38 +88,53 @@ int main(int argc, char* argv[]) {
 	Vec3 lookAt(0, 0, -1);
 	double focalDist = (lookFrom - lookAt).length();
 	double aperture = 0.2;
-	Camera cam(lookFrom, lookAt, -VEC3_UP, 90.0, double(XSIZE) / double(YSIZE), aperture, focalDist, 0.0, 1.0);
+	Camera cam(lookFrom, lookAt, -Vec3(0.0, 1.0, 0.0), 90.0, double(XSIZE) / double(YSIZE), aperture, focalDist, 0.0, 1.0);
 
 
 	SYSTEMTIME startTime;
 	GetLocalTime(&startTime);
 
-
-
 	for (int y = 0; y < YSIZE; y++) {
 		for (int x = 0; x < XSIZE; x++) {
 
-			Vec3 col;
+			Vec3 col(0.0, 0.0, 0.0);
 			for (int s = 0; s < NUM_SAMPLES; s++) {
 				double u = double(x + drand()) / double(XSIZE);
 				double v = double(y + drand()) / double(YSIZE);
-
+				
 				Ray r = cam.getRay(u, v);
-				col += getRayColor(r, world, 0);
+
+				Vec3 tmp = getRayColor(r, world, 0);
+				if (isNanVec(tmp)) {
+					printf("getRayColor() returns nan at (%d,%d): %.2f %.2f %.2f, sample=%d", x, y, tmp.x, tmp.y, tmp.z, s);
+				}
+
+				col += tmp;
 			}
-			col /= NUM_SAMPLES;
+
+			if (isnan(col.x) || isnan(col.y) || isnan(col.z)) {
+				printf("got nan at (%d,%d): %.2f %.2f %.2f", x, y, col.x, col.y, col.z);
+				exit(1);
+			}
+
+			col /= double(NUM_SAMPLES);
+			if (isnan(col.x) || isnan(col.y) || isnan(col.z)) {
+				printf("got nan after division at (%d,%d): %.2f %.2f %.2f", x, y, col.x, col.y, col.z);
+				exit(1);
+			}
 			col = Vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
-			int ir = int(255.0 * col.x);
-			int ig = int(255.0 * col.y);
-			int ib = int(255.0 * col.z);
+			if (isnan(col.x) || isnan(col.y) || isnan(col.z)) {
+				printf("got nan after sqrt (%d,%d): %.2f %.2f %.2f", x, y, col.x, col.y, col.z);
+				exit(1);
+			}
 
 			int ofs = (y*XSIZE + x) * 3;
-			imgData[ofs + 0] = ir & 0xff;
-			imgData[ofs + 1] = ig & 0xff;
-			imgData[ofs + 2] = ib & 0xff;
+			imgData[ofs + 0] = int(255.0 * col.x);
+			imgData[ofs + 1] = int(255.0 * col.y);
+			imgData[ofs + 2] = int(255.0 * col.z);
 		}
 		printf("%.1f%%...\n", double(y)*100.0 / double(YSIZE));
-		if (y%10 == 0)
+		if (y % 10 == 0)
 			stbi_write_png("temp.png", XSIZE, YSIZE, 3, imgData, 0);
 
 
