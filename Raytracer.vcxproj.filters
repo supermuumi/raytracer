@@ -15,49 +15,49 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClInclude Include="source\AABB.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="source\BVHNode.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Camera.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\common.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Hitable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\HitableList.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Material.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\MovingSphere.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Ray.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sphere.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\stb_image_write.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Texture.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Vec3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vec3.h">
+    <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ray.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hitable.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HitableList.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image_write.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MovingSphere.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AABB.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BVHNode.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>
