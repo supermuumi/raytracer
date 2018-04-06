@@ -27,18 +27,17 @@ public:
 
 class Metal : public Material {
 public:
-	Metal(Vec3 alb) {
-		albedo = alb;
+	Metal(Texture* alb) : albedo(alb) {
 	}
 	
 	virtual bool scatter(const Ray& rayIn, const HitRecord& rec, Vec3& attenuation, Ray& scattered) const {
 		Vec3 reflected = reflect(unitVector(rayIn.direction), rec.normal);
 		scattered = Ray(rec.point, reflected, rayIn.time); // +fuzziness*random_in_unit_sphere());
-		attenuation = albedo;
+		attenuation = albedo->value(rec.u, rec.v, rec.point);
 		return (dot(scattered.direction, rec.normal) > 0.0);
 	}
 
-	Vec3 albedo;
+	Texture* albedo;
 	double fuzziness;
 };
 
