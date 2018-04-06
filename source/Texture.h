@@ -56,8 +56,8 @@ public:
 	}
 
 	Vec3 value(double u, double v, const Vec3& p) {
-		int i = u * nx;
-		int j = (1.0 - v)*ny - 0.001;
+		int i = int(u * nx);
+		int j = int((1.0 - v)*ny - 0.001);
 		if (i < 0) {
 			i = 0;
 		}

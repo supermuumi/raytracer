@@ -15,9 +15,9 @@
 #include "stb_image_write.h"
 
 #define XSIZE 400
-#define YSIZE 200
+#define YSIZE 300
 #define NUM_SAMPLES 100
-#define MAX_RAY_RECURSION 2
+#define MAX_RAY_RECURSION 50
 
 Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 	HitRecord hit;
@@ -35,7 +35,8 @@ Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 	else {
 		Vec3 unitDir = unitVector(r.direction);
 		double t = 0.5*(unitDir.y + 1.0);
-		return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
+		Vec3 v = (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
+		return v;
 	}
 }
 
@@ -51,10 +52,8 @@ Hitable* createScene() {
 		double radius = 0.4 + drand()*0.2;
 		Material* mat;
 		double d = drand();
-		if (d < 1.0) {
-			//mat = new Lambertian(new ConstantTexture(Vec3(drand(), drand(), drand())));
-			//mat = new Metal(Vec3(drand(), drand(), drand()));
-			mat = new Dielectric(0.75 + drand()*0.5);
+		if (d < 0.6) {
+			mat = new Lambertian(new ConstantTexture(Vec3(drand(), drand(), drand())));
 		}
 		else if (d < 0.8) {
 			mat = new Metal(Vec3(drand(), drand(), drand()));
@@ -62,7 +61,7 @@ Hitable* createScene() {
 		else {
 			mat = new Dielectric(0.75 + drand()*0.5);
 		}
-		if (d < 0.01) {
+		if (d < 0.02) {
 			list[i] = new MovingSphere(center, center + Vec3(0.0, 0.1 + drand()*0.9, 0.0), 0.0, 1.0, radius, mat);
 		}
 		else {
@@ -75,9 +74,7 @@ Hitable* createScene() {
 	//return new HitableList(list, i);
 }
 
-bool isNanVec(Vec3 v) {
-	return isnan(v.x) || isnan(v.y) || isnan(v.z);
-}
+
 
 int main(int argc, char* argv[]) {
 	unsigned char* imgData = new unsigned char[XSIZE * YSIZE * 3];
@@ -88,7 +85,7 @@ int main(int argc, char* argv[]) {
 	Vec3 lookAt(0, 0, -1);
 	double focalDist = (lookFrom - lookAt).length();
 	double aperture = 0.2;
-	Camera cam(lookFrom, lookAt, -Vec3(0.0, 1.0, 0.0), 90.0, double(XSIZE) / double(YSIZE), aperture, focalDist, 0.0, 1.0);
+	Camera cam(lookFrom, lookAt, Vec3(0.0, -1.0, 0.0), 90.0, double(XSIZE) / double(YSIZE), aperture, focalDist, 0.0, 1.0);
 
 
 	SYSTEMTIME startTime;
@@ -101,32 +98,13 @@ int main(int argc, char* argv[]) {
 			for (int s = 0; s < NUM_SAMPLES; s++) {
 				double u = double(x + drand()) / double(XSIZE);
 				double v = double(y + drand()) / double(YSIZE);
-				
+
 				Ray r = cam.getRay(u, v);
-
 				Vec3 tmp = getRayColor(r, world, 0);
-				if (isNanVec(tmp)) {
-					printf("getRayColor() returns nan at (%d,%d): %.2f %.2f %.2f, sample=%d", x, y, tmp.x, tmp.y, tmp.z, s);
-				}
-
 				col += tmp;
 			}
-
-			if (isnan(col.x) || isnan(col.y) || isnan(col.z)) {
-				printf("got nan at (%d,%d): %.2f %.2f %.2f", x, y, col.x, col.y, col.z);
-				exit(1);
-			}
-
 			col /= double(NUM_SAMPLES);
-			if (isnan(col.x) || isnan(col.y) || isnan(col.z)) {
-				printf("got nan after division at (%d,%d): %.2f %.2f %.2f", x, y, col.x, col.y, col.z);
-				exit(1);
-			}
 			col = Vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
-			if (isnan(col.x) || isnan(col.y) || isnan(col.z)) {
-				printf("got nan after sqrt (%d,%d): %.2f %.2f %.2f", x, y, col.x, col.y, col.z);
-				exit(1);
-			}
 
 			int ofs = (y*XSIZE + x) * 3;
 			imgData[ofs + 0] = int(255.0 * col.x);
@@ -134,12 +112,10 @@ int main(int argc, char* argv[]) {
 			imgData[ofs + 2] = int(255.0 * col.z);
 		}
 		printf("%.1f%%...\n", double(y)*100.0 / double(YSIZE));
-		if (y % 10 == 0)
+		if (y % 10 == 0) {
 			stbi_write_png("temp.png", XSIZE, YSIZE, 3, imgData, 0);
-
-
+		}
 	}
-
 
 	SYSTEMTIME st;
 	GetLocalTime(&st);
@@ -148,7 +124,6 @@ int main(int argc, char* argv[]) {
 
 	printf("Start: %02d:%02d:%02d\n", startTime.wHour, startTime.wMinute, startTime.wSecond);
 	printf("End:   %02d:%02d:%02d\n", st.wHour, st.wMinute, st.wSecond);
-
 
 	stbi_write_png(filename, XSIZE, YSIZE, 3, imgData, 0);
 
