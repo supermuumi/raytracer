@@ -1,5 +1,8 @@
 #pragma once
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 class Vec3;
 
 class Texture {
@@ -11,7 +14,7 @@ class ConstantTexture : public Texture {
 public:
 	ConstantTexture() {
 	}
-	
+
 	ConstantTexture(Vec3 c) : color(c) {
 	}
 
@@ -49,24 +52,29 @@ public:
 	ImageTexture() {
 	}
 
-	ImageTexture(unsigned char* pixels, int a, int b) { 
+	ImageTexture(unsigned char* pixels, int w, int h, int b) {
 		data = pixels;
-		nx = a;
-		ny = b;
+		width = w;
+		height = h;
+		bpp = b;
 	}
 
-	Vec3 value(double u, double v, const Vec3& p) {
-		int i = int(u * nx);
-		int j = int((1.0 - v)*ny - 0.001);
-		if (i < 0) {
-			i = 0;
-		}
-		if (j < 0) {
-			j = 0;
-		}
+	ImageTexture(char const *fname) {
+		data = stbi_load(fname, &width, &height, &bpp, 0);
+	}
 
+	Vec3 value(double u, double v, const Vec3& p) const {
+		int i = int(u * width);
+		int j = int((1.0 - v)*height - 0.001);
+		i = clamp(i, 0, width - 1);
+		j = clamp(j, 0, height - 1);
+		double r = data[bpp * (i + width * j)] / 255.0;
+		double g = data[bpp * (i + width * j)+1] / 255.0;
+		double b = data[bpp * (i + width * j)+2] / 255.0;
+	
+		return Vec3(r, g, b);
 	}
 
 	unsigned char* data;
-	int nx, ny;
+	int width, height, bpp;
 };

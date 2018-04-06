@@ -53,7 +53,7 @@ Hitable* createScene() {
 		Material* mat;
 		double d = drand();
 		if (d < 0.6) {
-			mat = new Lambertian(new ConstantTexture(Vec3(drand(), drand(), drand())));
+			mat = new Lambertian(new ImageTexture("flowerpower.jpg"));
 		}
 		else if (d < 0.8) {
 			mat = new Metal(Vec3(drand(), drand(), drand()));
@@ -84,16 +84,14 @@ int main(int argc, char* argv[]) {
 	Vec3 lookFrom(-5, 3, 1);
 	Vec3 lookAt(0, 0, -1);
 	double focalDist = (lookFrom - lookAt).length();
-	double aperture = 0.2;
+	double aperture = 0.0;
 	Camera cam(lookFrom, lookAt, Vec3(0.0, -1.0, 0.0), 90.0, double(XSIZE) / double(YSIZE), aperture, focalDist, 0.0, 1.0);
-
 
 	SYSTEMTIME startTime;
 	GetLocalTime(&startTime);
 
 	for (int y = 0; y < YSIZE; y++) {
 		for (int x = 0; x < XSIZE; x++) {
-
 			Vec3 col(0.0, 0.0, 0.0);
 			for (int s = 0; s < NUM_SAMPLES; s++) {
 				double u = double(x + drand()) / double(XSIZE);

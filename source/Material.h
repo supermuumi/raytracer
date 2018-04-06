@@ -18,7 +18,7 @@ public:
 	virtual bool scatter(const Ray& rayIn, const HitRecord& rec, Vec3& attenuation, Ray& scattered) const {
 		Vec3 target = rec.point + rec.normal + getRandomInUnitSphere();
 		scattered = Ray(rec.point, target - rec.point, rayIn.time);
-		attenuation = albedo->value(0, 0, rec.point);
+		attenuation = albedo->value(rec.u, rec.v, rec.point);
 		return true;
 	}
 
