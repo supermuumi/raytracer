@@ -8,15 +8,17 @@
 #include "Material.h"
 #include "BVHNode.h"
 #include "Texture.h"
+#include "Rect.h"
+#include "Hitable.h"
 #include <Windows.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_MSC_SECURE_CRT
 #include "stb_image_write.h"
 
-#define XSIZE 400
-#define YSIZE 300
-#define NUM_SAMPLES 100
+#define XSIZE 200
+#define YSIZE 112
+#define NUM_SAMPLES 1000
 #define MAX_RAY_RECURSION 50
 
 Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
@@ -24,20 +26,54 @@ Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 	if (world->hit(r, 0.0001, DBL_MAX, hit)) {
 		Ray scattered;
 		Vec3 attenuation;
-
+		Vec3 emitted = hit.pMat->emitted(hit.u, hit.v, hit.point);
 		if (depth < MAX_RAY_RECURSION && hit.pMat->scatter(r, hit, attenuation, scattered)) {
-			return attenuation * getRayColor(scattered, world, depth + 1);
+			return emitted + attenuation * getRayColor(scattered, world, depth + 1);
 		}
 		else {
-			return Vec3(0.0, 0.0, 0.0);
+			return emitted;
 		}
 	}
 	else {
+		return  Vec3(0.0, 0.0, 0.0);
+		/*
 		Vec3 unitDir = unitVector(r.direction);
 		double t = 0.5*(unitDir.y + 1.0);
 		Vec3 v = (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
 		return v;
+		*/
 	}
+}
+
+Hitable* lightingTest() {
+	Texture* noise = new ConstantTexture(Vec3(0.8, 0.0, 0.0));
+	Hitable** list = new Hitable*[500];
+	int i = 0;
+	list[i++] = new Sphere(Vec3(0.0, -1000.0, 0.0), 1000.0, new Lambertian(noise));
+	list[i++] = new Sphere(Vec3(0.0, 2.0, 0.0), 2.0, new Lambertian(noise));
+	list[i++] = new Sphere(Vec3(0.0, 7.0, 0.0), 2.0, new DiffuseLight(new ConstantTexture(Vec3(4.0, 4.0, 4.0))));
+	list[i++] = new XYRect(3, 5, 1, 3, -2, new DiffuseLight(new ConstantTexture(Vec3(4.0, 4.0, 4.0))));
+	
+	return new HitableList(list, i);
+}
+
+Hitable* createCornellBox() {
+	Hitable** list = new Hitable*[500];
+	int i = 0;
+	
+	Material* red   = new Lambertian(new ConstantTexture(Vec3(0.65, 0.05, 0.05)));
+	Material* white = new Lambertian(new ConstantTexture(Vec3(0.73, 0.73, 0.73)));
+	Material* green = new Lambertian(new ConstantTexture(Vec3(0.12, 0.45, 0.15)));
+	Material* light = new DiffuseLight(new ConstantTexture(Vec3(15.0, 15.0, 15.0)));
+
+	list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
+	list[i++] = new YZRect(0, 555, 0, 555, 0,   red);
+	list[i++] = new XZRect(213, 343, 227, 332, 554, light);
+	list[i++] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
+	list[i++] = new XZRect(0, 555, 0, 555, 0, white);
+	list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+
+	return new HitableList(list, i);
 }
 
 Hitable* createScene() {
@@ -53,10 +89,10 @@ Hitable* createScene() {
 		Material* mat;
 		double d = drand();
 		if (d < 0.6) {
-			mat = new Lambertian(new ImageTexture("flowerpower.jpg"));
+			mat = new Lambertian(new ConstantTexture(Vec3(0.8, 0.0, 0.0)));
 		}
 		else if (d < 0.8) {
-			mat = new Metal(Vec3(drand(), drand(), drand()));
+			mat = new Metal(new ImageTexture("flowerpower.jpg")); 
 		}
 		else {
 			mat = new Dielectric(0.75 + drand()*0.5);
@@ -74,18 +110,26 @@ Hitable* createScene() {
 	//return new HitableList(list, i);
 }
 
-
-
 int main(int argc, char* argv[]) {
 	unsigned char* imgData = new unsigned char[XSIZE * YSIZE * 3];
 
-	Hitable* world = createScene();
-
+	//Hitable* world = createScene();
+	//Hitable* world = lightingTest();
+	/*
 	Vec3 lookFrom(-5, 3, 1);
 	Vec3 lookAt(0, 0, -1);
 	double focalDist = (lookFrom - lookAt).length();
 	double aperture = 0.0;
 	Camera cam(lookFrom, lookAt, Vec3(0.0, -1.0, 0.0), 90.0, double(XSIZE) / double(YSIZE), aperture, focalDist, 0.0, 1.0);
+	*/
+
+	Hitable* world = createCornellBox();
+	Vec3 lookFrom(278, 278, -800);
+	Vec3 lookAt(278, 278, 0);
+	double distToFocus = 10.0;
+	double aperture = 0.0;
+	double vFov = 40.0;
+	Camera cam(lookFrom, lookAt, Vec3(0.0, -1.0, 0.0), vFov, double(XSIZE) / double(YSIZE), aperture, distToFocus, 0.0, 1.0);
 
 	SYSTEMTIME startTime;
 	GetLocalTime(&startTime);
