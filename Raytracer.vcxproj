@@ -28,6 +28,7 @@
     <ClInclude Include="source\Material.h" />
     <ClInclude Include="source\MovingSphere.h" />
     <ClInclude Include="source\Ray.h" />
+    <ClInclude Include="source\Rect.h" />
     <ClInclude Include="source\Sphere.h" />
     <ClInclude Include="source\stb_image.h" />
     <ClInclude Include="source\stb_image_write.h" />

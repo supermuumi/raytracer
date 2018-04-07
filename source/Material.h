@@ -9,6 +9,9 @@ class Ray;
 class Material {
 public:
 	virtual bool scatter(const Ray& rayIn, const HitRecord& rec, Vec3& attenuation, Ray& scattered) const = 0;
+	virtual Vec3 emitted(double u, double v, const Vec3& p) const {
+		return Vec3(0.0, 0.0, 0.0);
+	}
 };
 
 class Lambertian : public Material {
@@ -80,4 +83,18 @@ public:
 	}
 
 	double ref_idx;
+};
+
+class DiffuseLight : public Material {
+public:
+	DiffuseLight(Texture* a) : emit(a) { }
+
+	virtual bool scatter(const Ray& rayIn, const HitRecord& rec, Vec3& attenuation, Ray& scattered) const {
+		return false;
+	}
+	virtual Vec3 emitted(double u, double v, const Vec3& p) const {
+		return emit->value(u, v, p);
+	}
+
+	Texture* emit;
 };
