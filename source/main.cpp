@@ -10,15 +10,16 @@
 #include "Texture.h"
 #include "Rect.h"
 #include "Hitable.h"
-#include <Windows.h>
+#include "Box.h"
+#include "Instances.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_MSC_SECURE_CRT
 #include "stb_image_write.h"
 
-#define XSIZE 200
-#define YSIZE 112
-#define NUM_SAMPLES 1000
+#define XSIZE 400
+#define YSIZE 250
+#define NUM_SAMPLES 100
 #define MAX_RAY_RECURSION 50
 
 Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
@@ -36,12 +37,6 @@ Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 	}
 	else {
 		return  Vec3(0.0, 0.0, 0.0);
-		/*
-		Vec3 unitDir = unitVector(r.direction);
-		double t = 0.5*(unitDir.y + 1.0);
-		Vec3 v = (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
-		return v;
-		*/
 	}
 }
 
@@ -59,12 +54,14 @@ Hitable* lightingTest() {
 
 Hitable* createCornellBox() {
 	Hitable** list = new Hitable*[500];
-	int i = 0;
+	
 	
 	Material* red   = new Lambertian(new ConstantTexture(Vec3(0.65, 0.05, 0.05)));
 	Material* white = new Lambertian(new ConstantTexture(Vec3(0.73, 0.73, 0.73)));
 	Material* green = new Lambertian(new ConstantTexture(Vec3(0.12, 0.45, 0.15)));
 	Material* light = new DiffuseLight(new ConstantTexture(Vec3(15.0, 15.0, 15.0)));
+
+	int i = 0;
 
 	list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 	list[i++] = new YZRect(0, 555, 0, 555, 0,   red);
@@ -73,7 +70,10 @@ Hitable* createCornellBox() {
 	list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 	list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 
-	return new HitableList(list, i);
+	list[i++] = new Translate(new RotateY(new Box(Vec3(0,0,0), Vec3(165, 165, 165), white), -18), Vec3(130, 0, 65));
+	list[i++] = new Translate(new RotateY(new Box(Vec3(0,0,0), Vec3(165, 330, 165), white),  15), Vec3(265, 0, 295));
+
+	return new BVHNode(list, i, 0.0, 1.0); // HitableList(list, i);
 }
 
 Hitable* createScene() {
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 	double distToFocus = 10.0;
 	double aperture = 0.0;
 	double vFov = 40.0;
-	Camera cam(lookFrom, lookAt, Vec3(0.0, -1.0, 0.0), vFov, double(XSIZE) / double(YSIZE), aperture, distToFocus, 0.0, 1.0);
+	Camera cam(lookFrom, lookAt, Vec3(0.0, 1.0, 0.0), vFov, double(XSIZE) / double(YSIZE), aperture, distToFocus, 0.0, 1.0);
 
 	SYSTEMTIME startTime;
 	GetLocalTime(&startTime);
@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
 			col /= double(NUM_SAMPLES);
 			col = Vec3(sqrt(col.x), sqrt(col.y), sqrt(col.z));
 
-			int ofs = (y*XSIZE + x) * 3;
+			int ofs = ((YSIZE-1-y)*XSIZE + x) * 3;
 			imgData[ofs + 0] = int(255.0 * col.x);
 			imgData[ofs + 1] = int(255.0 * col.y);
 			imgData[ofs + 2] = int(255.0 * col.z);
