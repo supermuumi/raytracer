@@ -99,7 +99,7 @@ bool XYRect::hit(const Ray& r, double t_min, double t_max, HitRecord& HitInfo) c
 	return true;
 }
 
-bool XZRect::hit(const Ray& r, double t_min, double t_max, HitRecord& HitInfo) const {
+bool XZRect::hit(const Ray& r, double t_min, double t_max, HitRecord& hitInfo) const {
 	double t = (k - r.origin.y) / r.direction.y;
 	if (t < t_min || t > t_max) {
 		return false;
@@ -109,32 +109,32 @@ bool XZRect::hit(const Ray& r, double t_min, double t_max, HitRecord& HitInfo) c
 	if (x < x0 || x > x1 || z < z0 || z > z1) {
 		return false;
 	}
-	HitInfo.u = (x - x0) / (x1 - x0);
-	HitInfo.v = (z - z0) / (z1 - z0);
-	HitInfo.dist = t;
-	HitInfo.pMat = pMat;
-	HitInfo.point = r.pointAt(t);
-	HitInfo.normal = Vec3(0.0, 1.0, 0.0);
+	hitInfo.u = (x - x0) / (x1 - x0);
+	hitInfo.v = (z - z0) / (z1 - z0);
+	hitInfo.dist = t;
+	hitInfo.pMat = pMat;
+	hitInfo.point = r.pointAt(t);
+	hitInfo.normal = Vec3(0.0, 1.0, 0.0);
 
 	return true;
 }
 
-bool YZRect::hit(const Ray& r, double t_min, double t_max, HitRecord& HitInfo) const {
+bool YZRect::hit(const Ray& r, double t_min, double t_max, HitRecord& hitInfo) const {
 	double t = (k - r.origin.x) / r.direction.x;
 	if (t < t_min || t > t_max) {
 		return false;
 	}
 	double y = r.origin.y + t * r.direction.y;
-	double z = r.origin.y + t * r.direction.y;
+	double z = r.origin.z + t * r.direction.z;
 	if (y < y0 || y > y1 || z < z0 || z > z1) {
 		return false;
 	}
-	HitInfo.u = (y - y0) / (y1 - y0);
-	HitInfo.v = (z - z0) / (z1 - z0);
-	HitInfo.dist = t;
-	HitInfo.pMat = pMat;
-	HitInfo.point = r.pointAt(t);
-	HitInfo.normal = Vec3(1.0, 0.0, 0.0);
+	hitInfo.u = (y - y0) / (y1 - y0);
+	hitInfo.v = (z - z0) / (z1 - z0);
+	hitInfo.dist = t;
+	hitInfo.pMat = pMat;
+	hitInfo.point = r.pointAt(t);
+	hitInfo.normal = Vec3(1.0, 0.0, 0.0);
 
 	return true;
 }
