@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\AABB.h" />
+    <ClInclude Include="source\Box.h" />
     <ClInclude Include="source\BVHNode.h" />
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\common.h" />
     <ClInclude Include="source\Hitable.h" />
     <ClInclude Include="source\HitableList.h" />
+    <ClInclude Include="source\Instances.h" />
     <ClInclude Include="source\Material.h" />
     <ClInclude Include="source\MovingSphere.h" />
     <ClInclude Include="source\Ray.h" />
