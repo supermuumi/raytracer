@@ -15,7 +15,7 @@ struct HitRecord {
 
 class Hitable {
 public:
-	virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& HitInfo) const = 0;
+	virtual bool hit(const Ray& r, double tMin, double tMax, HitRecord& hitInfo) const = 0;
 	virtual bool boundingBox(double t0, double t1, AABB& Box) const = 0;
 
 	Material* material;
@@ -26,9 +26,9 @@ public:
 	FlipNormals(Hitable* p) : ptr(p) {
 	}
 
-	virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& HitInfo) const {
-		if (ptr->hit(r, t_min, t_max, HitInfo)) {
-			HitInfo.normal = -HitInfo.normal;
+	virtual bool hit(const Ray& r, double t_min, double t_max, HitRecord& hitInfo) const {
+		if (ptr->hit(r, t_min, t_max, hitInfo)) {
+			hitInfo.normal = -hitInfo.normal;
 			return true;
 		}
 		else {
