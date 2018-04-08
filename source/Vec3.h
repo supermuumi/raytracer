@@ -37,6 +37,18 @@ public:
 	}
 	inline void normalize();
 
+	inline double dot(const Vec3& v2) {
+		return x*v2.x + y*v2.y + z*v2.z;
+	}
+
+	inline Vec3 cross(const Vec3& v2) {
+		return Vec3(
+			 (y * v2.z - z * v2.y),
+			-(x * v2.z - z * v2.x),
+			 (x * v2.y - y * v2.x)
+		);
+	}
+
 	double x;
 	double y;
 	double z;
