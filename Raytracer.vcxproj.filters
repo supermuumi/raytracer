@@ -45,17 +45,11 @@
     <ClInclude Include="source\Sphere.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\stb_image_write.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\Texture.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Vec3.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\stb_image.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Rect.h">
       <Filter>Header Files</Filter>
@@ -65,6 +59,12 @@
     </ClInclude>
     <ClInclude Include="source\Box.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="external\stb_image_write.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

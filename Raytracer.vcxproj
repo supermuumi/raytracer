@@ -32,8 +32,8 @@
     <ClInclude Include="source\Ray.h" />
     <ClInclude Include="source\Rect.h" />
     <ClInclude Include="source\Sphere.h" />
-    <ClInclude Include="source\stb_image.h" />
-    <ClInclude Include="source\stb_image_write.h" />
+    <ClInclude Include="external\stb_image.h" />
+    <ClInclude Include="external\stb_image_write.h" />
     <ClInclude Include="source\Texture.h" />
     <ClInclude Include="source\Vec3.h" />
   </ItemGroup>
@@ -94,6 +94,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\code\enkiTS\src</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;D:\code\enkiTS\build\Release</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);external</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -53,7 +53,7 @@ Vec3 getRayColor(const Ray& r, Hitable* world, int depth) {
 	}
 }
 
-Hitable* lightingTest() {
+void createLightingTest() {
 	Texture* noise = new ConstantTexture(Vec3(0.8, 0.0, 0.0));
 	Hitable** list = new Hitable*[500];
 	int i = 0;
@@ -62,7 +62,12 @@ Hitable* lightingTest() {
 	list[i++] = new Sphere(Vec3(0.0, 7.0, 0.0), 2.0, new DiffuseLight(new ConstantTexture(Vec3(4.0, 4.0, 4.0))));
 	list[i++] = new XYRect(3, 5, 1, 3, -2, new DiffuseLight(new ConstantTexture(Vec3(4.0, 4.0, 4.0))));
 
-	return new HitableList(list, i);
+	gWorld = new HitableList(list, i);
+	Vec3 lookFrom(-5, 3, 1);
+	Vec3 lookAt(0, 0, -1);
+	double focalDist = (lookFrom - lookAt).length();
+	double aperture = 0.0;
+	gCamera = Camera(lookFrom, lookAt, Vec3(0.0, -1.0, 0.0), 90.0, double(gImageWidth) / double(gImageHeight), aperture, focalDist, 0.0, 1.0);
 }
 
 void createCornellBox() {
@@ -94,11 +99,11 @@ void createCornellBox() {
 	gCamera = Camera(lookFrom, lookAt, Vec3(0.0, 1.0, 0.0), vFov, double(gImageWidth) / double(gImageHeight), aperture, distToFocus, 0.0, 1.0);
 }
 
-void createScene() {
+void createRandomScene() {
 	Hitable** list = new Hitable*[500];
 	list[0] = new Sphere(Vec3(0.0, -100.5, -1.0), 100.0, new Lambertian(new CheckerTexture(new ConstantTexture(Vec3(0.8, 0.3, 0.3)), new ConstantTexture(Vec3(0.9, 0.9, 0.9)))));
 	int i = 1;
-	srand(715517);
+
 	double x = drand();
 	int nnn = rand();
 	for (; i < 200; i++) {
@@ -183,7 +188,8 @@ void parseCommandLine(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
 	parseCommandLine(argc, argv);
 
-	//createScene();
+	//createRandomScene();
+	//createLightingTest();
 	createCornellBox();
 
 	unsigned char* imgData = new unsigned char[gImageWidth * gImageHeight * 3];
