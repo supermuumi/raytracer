@@ -6,6 +6,9 @@
 
 class Camera {
 public:
+	Camera() {
+	}
+
 	Camera(Vec3 lookFrom, Vec3 lookAt, Vec3 up, 
 		   double vFov, double aspect, 
 		   double aperture, double focalDist,
